@@ -18,6 +18,37 @@ class BioMolecule():
     # 1. Write setter and getter methods for all attributes.
     #    Use @property decorators as dicussed in the lecture
     # 2. In the setter methods check for the type of each attribute.
+    @property
+    def id(self):
+        return self._id
+
+    @property
+    def name(self):
+        return self._name
+
+
+    @property
+    def mass(self):
+        return self._mass
+
+    @id.setter
+    def id(self, value):
+        if not isinstance(value, int):
+            raise TypeError ("id must be integer")
+        self._id=value
+
+    @name.setter
+    def name(self, string):
+        if not isinstance(string, str):
+            raise TypeError ("name must be string")
+        self._name=string
+
+    @mass.setter
+    def mass(self, value):
+        if not isinstance(value, float):
+            raise TypeError ("mass must be float")
+        self._mass=value
+
 
 class Polymer(BioMolecule):
     """
@@ -31,10 +62,22 @@ class Polymer(BioMolecule):
     """
     def __init__(self, id, name, sequence, mass=0.):
         # 3. Initialize the parent class correctly
+        super().__init__(id, name, mass)
         self.sequence = sequence
 
     
     # 4. Write getter and setter for sequence, again check for type
+    @property
+    def sequence(self):
+        return self._sequence
+
+    @sequence.setter
+    def sequence(self, string):
+        if not isinstance(string, str):
+            raise TypeError ("sequence must be string")
+        self._sequence=string
+
+
     # 5. run in ipython, instantiate this class, and test it
     def __getitem__(self, value):
         """
@@ -55,14 +98,20 @@ class Polymer(BioMolecule):
 class MRNA(Polymer):
     def __init__(self, id, name, sequence, mass=0.):
         # 6. Initialize the parent class correctly
-
+        super().__init__(id, name, sequence, mass)
         # 7. Create a list that stores if a ribosome is bound for each
         # codon (triplet).
-        self.binding = [] # use this attribute for 7.
+        self.binding = int(len(sequence)/3)*[0] # use this attribute for 7.
+
 
     def calculate_mass(self):
         NA_mass = {'A': 1.0, 'U': 2.2, 'G':2.1, 'C':1.3}
         # 8. calculate the mass for the whole sequence
+        sequence_mass=0
+        for x in self.sequence:
+            sequence_mass+=NA_mass[x]
+        return sequence_mass
+
 
 class Protein(Polymer):
     """Protein with Polymer features and mass calculation. A global class
@@ -81,9 +130,10 @@ class Protein(Polymer):
     def __init__(self, id, name, sequence, mass=0.):
         super().__init__(id, name, sequence, mass)
         self.__class__.number_of_proteins += 1 #  increase instance counter
-        self.mass = self.calculate_mass()
+        self.calculate_mass()
 
     # 9. implement the elongation feature described in the docstring. (__add__)
+
 
     def calculate_mass(self):
         AA_mass = {"A": 89.0929, "R": 175.208, "N": 132.118, "D": 132.094, "C": 121.158, "Q": 146.144,
